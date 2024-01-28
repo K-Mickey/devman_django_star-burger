@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -61,6 +62,24 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order_serialized = request.data
+    error_text = None
+    try:
+        products = order_serialized['products']
+    except KeyError:
+        error_text = 'Продуктов нет.'
+    else:
+        if products is None:
+            error_text = 'Продукты - это null.̆'
+        elif not products:
+            error_text = 'Продукты - пустой список.̆'
+        elif isinstance(products, str):
+            error_text = 'Продукты - это не список, а строка.̆'
+
+    if error_text:
+        return Response(
+            {'status': 'error', 'message': error_text},
+            status=status.HTTP_406_NOT_ACCEPTABLE,
+        )
 
     order = Order.objects.create(
         firstname=order_serialized['firstname'],
@@ -68,7 +87,8 @@ def register_order(request):
         address=order_serialized['address'],
         phonenumber=order_serialized['phonenumber'],
     )
-    for position in order_serialized['products']:
+
+    for position in products:
         OrderPosition.objects.create(
             order=order,
             product=Product.objects.get(id=position['product']),
