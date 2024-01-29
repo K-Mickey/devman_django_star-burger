@@ -1,3 +1,4 @@
+import phonenumber_field
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework import status
@@ -62,19 +63,7 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order_serialized = request.data
-    error_text = None
-    try:
-        products = order_serialized['products']
-    except KeyError:
-        error_text = 'Продуктов нет.'
-    else:
-        if products is None:
-            error_text = 'Продукты - это null.̆'
-        elif not products:
-            error_text = 'Продукты - пустой список.̆'
-        elif isinstance(products, str):
-            error_text = 'Продукты - это не список, а строка.̆'
-
+    error_text = validate_order(order_serialized)
     if error_text:
         return Response(
             {'status': 'error', 'message': error_text},
@@ -88,10 +77,40 @@ def register_order(request):
         phonenumber=order_serialized['phonenumber'],
     )
 
-    for position in products:
+    for position in order_serialized['products']:
+        product = Product.objects.get(id=position['product'])
+        if not product:
+            return Response(
+                {'status': 'error', 'message': 'Продукт не найден'},
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+            )
         OrderPosition.objects.create(
             order=order,
             product=Product.objects.get(id=position['product']),
             quantity=position['quantity'],
         )
     return Response({})
+
+
+def validate_order(order_serialized) -> str | None:
+    required_fields = ['firstname', 'lastname', 'address', 'phonenumber', 'products']
+
+    not_present_fields = [field for field in required_fields if field not in order_serialized]
+    if not_present_fields:
+        return f"{', '.join(not_present_fields)} - полей нет в запросе."
+
+    none_fields = [field for field in required_fields if order_serialized[field] is None]
+    if none_fields:
+        return f"{', '.join(none_fields)} - это none значения."
+
+    empty_fields = [field for field in required_fields if not order_serialized[field]]
+    if empty_fields:
+        return f"{', '.join(empty_fields)} - это пустые значения."
+
+    if isinstance(order_serialized['products'], str):
+        return 'Продукты - это не список, а строка.̆'
+
+    if not isinstance(order_serialized['firstname'], str):
+        return 'Имя - это не строка.'
+
+    return None
