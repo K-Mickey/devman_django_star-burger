@@ -151,17 +151,17 @@ class Order(models.Model):
         return f'{self.firstname} {self.lastname} {self.address}'
 
 
-class OrderPosition(models.Model):
+class OrderProduct(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='positions',
+        related_name='products',
         verbose_name='Заказ'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='positions',
+        related_name='products',
         verbose_name='Товар'
     )
     quantity = models.PositiveIntegerField(

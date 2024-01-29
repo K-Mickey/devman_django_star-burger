@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Product, Order, OrderPosition
+from .models import Product, Order, OrderProduct
+from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
@@ -62,55 +63,22 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    order_serialized = request.data
-    error_text = validate_order(order_serialized)
-    if error_text:
-        return Response(
-            {'status': 'error', 'message': error_text},
-            status=status.HTTP_406_NOT_ACCEPTABLE,
-        )
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
+    validated_data = serializer.validated_data
     order = Order.objects.create(
-        firstname=order_serialized['firstname'],
-        lastname=order_serialized['lastname'],
-        address=order_serialized['address'],
-        phonenumber=order_serialized['phonenumber'],
+        firstname=validated_data['firstname'],
+        lastname=validated_data['lastname'],
+        address=validated_data['address'],
+        phonenumber=validated_data['phonenumber'],
     )
 
-    for position in order_serialized['products']:
-        product = Product.objects.get(id=position['product'])
-        if not product:
-            return Response(
-                {'status': 'error', 'message': 'Продукт не найден'},
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-            )
-        OrderPosition.objects.create(
-            order=order,
-            product=Product.objects.get(id=position['product']),
-            quantity=position['quantity'],
-        )
+    raw_products = validated_data['products']
+    products = [
+        OrderProduct(order=order, **position) for position in raw_products
+    ]
+    OrderProduct.objects.bulk_create(products)
+
     return Response({})
 
-
-def validate_order(order_serialized) -> str | None:
-    required_fields = ['firstname', 'lastname', 'address', 'phonenumber', 'products']
-
-    not_present_fields = [field for field in required_fields if field not in order_serialized]
-    if not_present_fields:
-        return f"{', '.join(not_present_fields)} - полей нет в запросе."
-
-    none_fields = [field for field in required_fields if order_serialized[field] is None]
-    if none_fields:
-        return f"{', '.join(none_fields)} - это none значения."
-
-    empty_fields = [field for field in required_fields if not order_serialized[field]]
-    if empty_fields:
-        return f"{', '.join(empty_fields)} - это пустые значения."
-
-    if isinstance(order_serialized['products'], str):
-        return 'Продукты - это не список, а строка.̆'
-
-    if not isinstance(order_serialized['firstname'], str):
-        return 'Имя - это не строка.'
-
-    return None
