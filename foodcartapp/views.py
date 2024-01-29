@@ -1,11 +1,9 @@
-import phonenumber_field
 from django.http import JsonResponse
 from django.templatetags.static import static
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Product, Order, OrderProduct
+from .models import Product
 from .serializers import OrderSerializer
 
 
@@ -65,20 +63,7 @@ def product_list_api(request):
 def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+    serializer.create(serializer.validated_data)
 
-    validated_data = serializer.validated_data
-    order = Order.objects.create(
-        firstname=validated_data['firstname'],
-        lastname=validated_data['lastname'],
-        address=validated_data['address'],
-        phonenumber=validated_data['phonenumber'],
-    )
-
-    raw_products = validated_data['products']
-    products = [
-        OrderProduct(order=order, **position) for position in raw_products
-    ]
-    OrderProduct.objects.bulk_create(products)
-
-    return Response({})
+    return Response(serializer.initial_data)
 

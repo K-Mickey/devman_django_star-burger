@@ -8,10 +8,26 @@ class OrderProductSerializer(serializers.ModelSerializer):
         model = OrderProduct
         fields = ('product', 'quantity')
 
+    def create(self, validated_data, order: Order):
+        return OrderProduct.objects.create(
+            order=order,
+            **validated_data
+        )
+
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = OrderProductSerializer(many=True, allow_empty=False)
+    products = OrderProductSerializer(many=True, allow_empty=False, required=True)
 
     class Meta:
         model = Order
         fields = ('firstname', 'lastname', 'address', 'phonenumber', 'products')
+
+    def create(self, validated_data):
+        products = validated_data.pop('products')
+        order = Order.objects.create(**validated_data)
+
+        for product in products:
+            serializer = OrderProductSerializer(data=product)
+            serializer.create(product, order)
+
+        return order
