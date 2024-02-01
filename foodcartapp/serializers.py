@@ -12,7 +12,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data, order: Order):
         return OrderProduct.objects.create(
             order=order,
-            price=validated_data['product'].price,
+            current_price=validated_data['product'].price,
             **validated_data
         )
 
