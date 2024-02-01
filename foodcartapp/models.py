@@ -129,10 +129,16 @@ class OrderQuerySet(models.QuerySet):
     def total_price(self):
         return self.annotate(
             price=Sum(F('products__current_price') * F('products__quantity'))
-        )
+        ).exclude(status='complete')
 
 
 class Order(models.Model):
+    STATUSES = [
+        ('create', 'Создан'),
+        ('cooking', 'Готовится'),
+        ('deliver', 'Доставляется'),
+        ('complete', 'Завершен'),
+    ]
     firstname = models.CharField(
         max_length=50,
         verbose_name='Имя'
@@ -148,7 +154,13 @@ class Order(models.Model):
         max_length=200,
         verbose_name='Адрес',
         db_index=True,
-
+    )
+    status = models.CharField(
+        verbose_name='Статус',
+        max_length=10,
+        choices=STATUSES,
+        default='create',
+        db_index=True,
     )
 
     objects = OrderQuerySet.as_manager()

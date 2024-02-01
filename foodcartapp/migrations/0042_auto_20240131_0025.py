@@ -7,12 +7,12 @@ from django.db.models import F
 def set_price_to_products(apps, schema_editor):
     order_product = apps.get_model('foodcartapp', 'OrderProduct')
 
-    order_product.objects.filter(current_price__isnull=True)\
-        .update(current_price=F('product_price'))
+    for order in order_product.objects.filter(current_price__isnull=True):
+        order.current_price = order.product.price
+        order.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0041_rename_price_orderproduct_current_price'),
     ]
