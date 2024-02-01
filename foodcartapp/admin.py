@@ -1,7 +1,10 @@
 from django.contrib import admin
-from django.shortcuts import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import reverse, redirect
 from django.templatetags.static import static
+from django.utils.encoding import iri_to_uri
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .models import Product, Order, OrderProduct
 from .models import ProductCategory
@@ -116,3 +119,12 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         OrderPositionInline
     ]
+
+    def response_post_save_change(self, request, obj):
+        res = super().response_post_save_change(request, obj)
+        if url_has_allowed_host_and_scheme(request.GET.get('next'), None):
+            url = request.GET.get('next')
+            return redirect(url)
+        else:
+            return res
+
