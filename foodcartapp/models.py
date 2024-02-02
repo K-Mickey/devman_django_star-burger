@@ -130,16 +130,36 @@ class OrderQuerySet(models.QuerySet):
     def total_price(self):
         return self.annotate(
             price=Sum(F('products__current_price') * F('products__quantity'))
-        ).exclude(status='complete')
+        ).exclude(status=StatusOrder.complete)
+
+
+class StatusOrder(models.TextChoices):
+    create = 'create', 'Создан'
+    cooking = 'cooking', 'Готовится'
+    deliver = 'deliver', 'Доставляется'
+    complete = 'complete', 'Завершен'
+
+
+class PayOrder(models.TextChoices):
+    cash = 'cash', 'Наличные'
+    card = 'card', 'Карта'
 
 
 class Order(models.Model):
-    STATUSES = [
-        ('create', 'Создан'),
-        ('cooking', 'Готовится'),
-        ('deliver', 'Доставляется'),
-        ('complete', 'Завершен'),
-    ]
+    status = models.CharField(
+        verbose_name='Статус',
+        max_length=10,
+        choices=StatusOrder.choices,
+        default=StatusOrder.create,
+        db_index=True,
+    )
+    payment_method = models.CharField(
+        verbose_name='Способ оплаты',
+        max_length=10,
+        choices=PayOrder.choices,
+        default=PayOrder.cash,
+        db_index=True,
+    )
     firstname = models.CharField(
         max_length=50,
         verbose_name='Имя'
@@ -154,13 +174,6 @@ class Order(models.Model):
     address = models.CharField(
         max_length=200,
         verbose_name='Адрес',
-        db_index=True,
-    )
-    status = models.CharField(
-        verbose_name='Статус',
-        max_length=10,
-        choices=STATUSES,
-        default='create',
         db_index=True,
     )
     comment = models.TextField(
