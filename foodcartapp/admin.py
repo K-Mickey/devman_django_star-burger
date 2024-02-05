@@ -6,7 +6,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.html import format_html
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from .models import Product, Order, OrderProduct
+from .models import Product, Order, OrderProduct, StatusOrder
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
@@ -122,9 +122,30 @@ class OrderAdmin(admin.ModelAdmin):
 
     def response_post_save_change(self, request, obj):
         res = super().response_post_save_change(request, obj)
+        print(obj)
         if url_has_allowed_host_and_scheme(request.GET.get('next'), None):
             url = request.GET.get('next')
             return redirect(url)
         else:
             return res
 
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj is None:
+            return form
+
+        restaurants = []
+        for order in Order.objects.filter(id=obj.id).available_restaurants():
+            for restaurant in order.available_restaurants:
+                restaurants.append(restaurant.name)
+
+        form.base_fields['restaurant'].queryset = \
+            Restaurant.objects.filter(name__in=restaurants)
+        return form
+
+    def save_form(self, request, form, change):
+        form = form.save(commit=False)
+        if form.status == StatusOrder.create and form.restaurant is not None:
+            form.status = StatusOrder.cooking
+        form.save()
+        return form

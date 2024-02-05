@@ -132,6 +132,20 @@ class OrderQuerySet(models.QuerySet):
             price=Sum(F('products__current_price') * F('products__quantity'))
         ).exclude(status=StatusOrder.complete)
 
+    def available_restaurants(self):
+        menu_items = RestaurantMenuItem.objects.\
+            select_related('restaurant', 'product').filter(availability=True)
+        for order in self:
+            products = list(
+                order.products.all().values_list('product', flat=True)
+            )
+            available_items = menu_items.filter(product_id__in=products)\
+                .distinct()
+            order.available_restaurants = {
+                item.restaurant for item in available_items
+            }
+        return self
+
 
 class StatusOrder(models.TextChoices):
     create = 'create', 'Создан'
@@ -178,6 +192,14 @@ class Order(models.Model):
     )
     comment = models.TextField(
         verbose_name='Комментарий',
+        blank=True,
+    )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        verbose_name='Ресторан',
+        related_name='orders',
+        null=True,
         blank=True,
     )
     created_at = models.DateTimeField(

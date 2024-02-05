@@ -96,5 +96,5 @@ def view_orders(request):
         request,
         template_name='order_items.html',
         context={
-            'order_items': Order.objects.total_price()
+            'order_items': Order.objects.total_price().available_restaurants()
         })
