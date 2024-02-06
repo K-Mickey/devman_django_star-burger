@@ -54,9 +54,9 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменную окружения `SECRET_KEY` и 'YANDEX_GEO_TOKEN'. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
+Определите переменную окружения `SECRET_KEY` и `YANDEX_GEO_TOKEN`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
 ```sh
-
+SECRET_KEY=django-insecure-0if40nf4nf93n4
 ```
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
@@ -147,11 +147,8 @@ Parcel будет следить за файлами в каталоге `bundle
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
 
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).
-
-Где используется репозиторий:
-
-- Второй и третий урок [учебного курса Django](https://dvmn.org/modules/django/)
