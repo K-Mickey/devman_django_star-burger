@@ -9,7 +9,7 @@ from django.contrib.auth import views as auth_views
 
 
 from foodcartapp.models import Product, Restaurant, Order
-from foodcartapp.utils import get_distance
+from map.utils import get_distance
 
 
 class Login(forms.Form):

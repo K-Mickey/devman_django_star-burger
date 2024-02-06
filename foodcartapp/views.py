@@ -66,4 +66,3 @@ def register_order(request):
     serializer.create(serializer.validated_data)
 
     return Response(serializer.initial_data)
-
