@@ -132,7 +132,7 @@ class OrderQuerySet(models.QuerySet):
             price=Sum(F('products__current_price') * F('products__quantity'))
         ).exclude(status=StatusOrder.complete)
 
-    def available_restaurants(self):
+    def restaurants(self):
         menu_items = RestaurantMenuItem.objects.\
             select_related('restaurant', 'product').filter(availability=True)
         for order in self:
@@ -141,7 +141,7 @@ class OrderQuerySet(models.QuerySet):
             )
             available_items = menu_items.filter(product_id__in=products)\
                 .distinct()
-            order.available_restaurants = {
+            order.restaurants = {
                 item.restaurant for item in available_items
             }
         return self

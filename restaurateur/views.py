@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 
 
 from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.utils import get_distance
 
 
 class Login(forms.Form):
@@ -96,5 +97,5 @@ def view_orders(request):
         request,
         template_name='order_items.html',
         context={
-            'order_items': Order.objects.total_price().available_restaurants()
+            'order_items': get_distance(Order.objects.total_price().restaurants())
         })

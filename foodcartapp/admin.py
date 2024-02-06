@@ -135,8 +135,8 @@ class OrderAdmin(admin.ModelAdmin):
             return form
 
         restaurants = []
-        for order in Order.objects.filter(id=obj.id).available_restaurants():
-            for restaurant in order.available_restaurants:
+        for order in Order.objects.filter(id=obj.id).restaurants():
+            for restaurant in order.restaurants:
                 restaurants.append(restaurant.name)
 
         form.base_fields['restaurant'].queryset = \

@@ -40,14 +40,19 @@
           {% if item.restaurant %}
              Готовит {{ item.restaurant }}
           {% else %}
-            {% if not item.available_restaurants %}
+            {% if not item.restaurants %}
               Ни один ресторан не может приготовить заказ полностью.
             {% else %}
               <details>
                 <summary>Может быть приготовлен ресторанами:</summary>
                 <ul>
-                  {% for restaurant in item.available_restaurants %}
-                    <li>{{ restaurant.name }}</li>
+                  {% for restaurant, distance in item.restaurants %}
+                    <li>
+                      {{ restaurant.name }}
+                        {% if distance is not None %}
+                         - {{ distance }} km
+                        {% endif %}
+                    </li>
                   {% endfor %}
                 </ul>
               </details>

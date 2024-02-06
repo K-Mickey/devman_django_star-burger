@@ -54,7 +54,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменную окружения `SECRET_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
+Определите переменную окружения `SECRET_KEY` и 'YANDEX_GEO_TOKEN'. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
 ```sh
 
 ```
