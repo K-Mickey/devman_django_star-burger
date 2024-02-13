@@ -130,7 +130,7 @@ class OrderQuerySet(models.QuerySet):
     def total_price(self):
         return self.annotate(
             price=Sum(F('products__current_price') * F('products__quantity'))
-        ).exclude(status=StatusOrder.complete)
+        ).exclude(status=OrderStatus.complete)
 
     def restaurants(self):
         menu_items = RestaurantMenuItem.objects.\
@@ -147,14 +147,14 @@ class OrderQuerySet(models.QuerySet):
         return self
 
 
-class StatusOrder(models.TextChoices):
+class OrderStatus(models.TextChoices):
     create = 'create', 'Создан'
     cooking = 'cooking', 'Готовится'
     deliver = 'deliver', 'Доставляется'
     complete = 'complete', 'Завершен'
 
 
-class PayOrder(models.TextChoices):
+class PaymentType(models.TextChoices):
     cash = 'cash', 'Наличные'
     card = 'card', 'Карта'
 
@@ -163,15 +163,15 @@ class Order(models.Model):
     status = models.CharField(
         verbose_name='Статус',
         max_length=10,
-        choices=StatusOrder.choices,
-        default=StatusOrder.create,
+        choices=OrderStatus.choices,
+        default=OrderStatus.create,
         db_index=True,
     )
     payment_method = models.CharField(
         verbose_name='Способ оплаты',
         max_length=10,
-        choices=PayOrder.choices,
-        default=PayOrder.cash,
+        choices=PaymentType.choices,
+        default=PaymentType.cash,
         db_index=True,
     )
     firstname = models.CharField(
