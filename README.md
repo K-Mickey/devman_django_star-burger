@@ -56,12 +56,12 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменные окружения. Создать файл `.env` и положите туда код:
+Создать файл `.env` и определить в ней переменные окружения:
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
-- 'ROLLBACK_ACCESS_TOKEN' - [Rollback токен](https://rollbar.com/)
+- `ROLLBACK_ACCESS_TOKEN` - [Rollback токен](https://rollbar.com/)
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
