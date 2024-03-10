@@ -13,6 +13,8 @@
 
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
 
+В сайт встроены системы Yandex Geocoder для расчёта расстояния между ресторанами. Rollback для отслеживания и устранения ошибок.
+
 ## Как запустить dev-версию сайта
 
 Для запуска сайта нужно запустить **одновременно** бэкенд и фронтенд, в двух терминалах.
@@ -54,9 +56,13 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменную окружения `SECRET_KEY` и `YANDEX_GEO_TOKEN`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
+Определите переменные окружения. Создать файл `.env` и положите туда код:
 ```sh
-SECRET_KEY=django-insecure-0if40nf4nf93n4
+- `DEBUG` — дебаг-режим. Поставьте `False`.
+- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
+- 'ROLLBACK_ACCESS_TOKEN' - [Rollback токен](https://rollbar.com/)
 ```
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
@@ -97,7 +103,6 @@ npm --version
 Перейдите в каталог проекта и установите пакеты Node.js:
 
 ```sh
-cd star-burger
 npm ci --dev
 ```
 
@@ -142,12 +147,7 @@ Parcel будет следить за файлами в каталоге `bundle
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
 
-Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
-
-- `DEBUG` — дебаг-режим. Поставьте `False`.
-- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
+Настроить бэкенд: создать файл `.env` в каталоге `devman_django_star-burger/`
 
 ## Цели проекта
 
