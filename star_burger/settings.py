@@ -4,7 +4,6 @@ import dj_database_url
 
 from environs import Env
 
-
 env = Env()
 env.read_env()
 
@@ -96,7 +95,10 @@ MEDIA_URL = '/media/'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
+        default=env.str(
+            'DATABASE_URL',
+            'sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
+        )
     )
 }
 
@@ -130,7 +132,6 @@ STATIC_URL = '/static/'
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
-
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),

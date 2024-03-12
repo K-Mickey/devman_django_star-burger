@@ -50,10 +50,14 @@ python -m venv venv
 - Windows: `.\venv\Scripts\activate`
 - MacOS/Linux: `source venv/bin/activate`
 
-
 Установите зависимости в виртуальное окружение:
 ```sh
 pip install -r requirements.txt
+```
+При использовании PostgreSQL используйте, если используете Linux или MAC OS, то предварительно установите psycopg2-binary:
+```shell
+pip isntall psycopg2-binary
+pip install psycopg2
 ```
 
 Определите переменные окружения. Создать файл `.env` и положите туда код:
@@ -64,6 +68,7 @@ pip install -r requirements.txt
 - `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
 - 'ROLLBAR_ACCESS_TOKEN' - [Rollback токен](https://rollbar.com/)
 - `ROLLBAR_ENVIRONMENT` - Название окружения Rollbar
+- `DATABASE_URL` - [Схема БД](https://github.com/jazzband/dj-database-url#url-schema) вида postgres://USER:PASSWORD@HOST:PORT/NAME
 ```
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
