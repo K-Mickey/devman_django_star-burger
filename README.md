@@ -68,6 +68,7 @@ pip install psycopg2
 - `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
 - 'ROLLBAR_ACCESS_TOKEN' - [Rollback токен](https://rollbar.com/)
 - `ROLLBAR_ENVIRONMENT` - Название окружения Rollbar
+- `ROLLBAR_NAME` - Имя пользователя Rollbar
 - `DATABASE_URL` - [Схема БД](https://github.com/jazzband/dj-database-url#url-schema) вида postgres://USER:PASSWORD@HOST:PORT/NAME
 ```
 
