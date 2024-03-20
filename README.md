@@ -62,11 +62,16 @@ pip install psycopg2
 ```
 
 Определите переменные окружения. Создать файл `.env` и положите туда код:
+```
+YANDEX_GEO_TOKEN=<ваш токен>
+```
+
+Полный список переменных окружения, которые можно определить:
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YANDEX_GEO_TOKEN` — [Yandex geocoder API](https://developer.tech.yandex.ru/services)
-- 'ROLLBAR_ACCESS_TOKEN' - [Rollback токен](https://rollbar.com/)
+- `ROLLBAR_ACCESS_TOKEN` - [Rollback токен](https://rollbar.com/)
 - `ROLLBAR_ENVIRONMENT` - Название окружения Rollbar
 - `ROLLBAR_NAME` - Имя пользователя Rollbar
 - `DATABASE_URL` - [Схема БД](https://github.com/jazzband/dj-database-url#url-schema) вида postgres://USER:PASSWORD@HOST:PORT/NAME
