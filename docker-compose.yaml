@@ -9,11 +9,11 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     environment:
-      - DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@postgres:5432/$${POSTGRES_DB}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     networks:
       - star-burger
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +35,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: star-burger-django
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,6 +50,8 @@ services:
       - assets_volume:/app/assets
     networks:
       - star-burger
+    ports:
+      - "127.0.0.1:8000:8081"
     command: >
       sh -c "python manage.py collectstatic --no-input &&
       python manage.py migrate &&
@@ -60,7 +62,17 @@ services:
 volumes:
   postgres_volume:
   static_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/star-burger/static
   media_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/star-burger/media
   bundles_volume:
   assets_volume:
 
