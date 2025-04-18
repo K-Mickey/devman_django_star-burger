@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:15.0-alpine
+    container_name: star-burger-postgres
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=star_burger
+      - POSTGRES_PASSWORD=star_burger
+      - POSTGRES_USER=star_burger_user
+    networks:
+      - star-burger
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-front
+    container_name: star-burger-frontend
+    volumes:
+      - bundles_volume:/app/bundles
+    networks:
+      - star-burger
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile-back
+    container_name: star-burger-django
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      - GUNICORN_HOST=0.0.0.0
+      - GUNICORN_WORKERS=4
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - bundles_volume:/app/bundles
+    networks:
+      - star-burger
+    command: >
+      sh -c "python manage.py collectstatic --no-input &&
+      python manage.py migrate &&
+      gunicorn star_burger.wsgi:application
+      --bind $${GUNICORN_HOST}:8081
+      --workers $${GUNICORN_WORKERS}"
+
+  nginx:
+    image: nginx:1.18.0
+    container_name: star-burger-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - django
+    networks:
+      - star-burger
+
+volumes:
+  postgres_volume:
+  static_volume:
+  media_volume:
+  bundles_volume:
+
+networks:
+  star-burger:
+    name: star-burger
+    driver: bridge
