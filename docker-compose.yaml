@@ -9,9 +9,7 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=star_burger
-      - POSTGRES_PASSWORD=star_burger
-      - POSTGRES_USER=star_burger_user
+      - DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@postgres:5432/$${POSTGRES_DB}
     networks:
       - star-burger
     healthcheck:
