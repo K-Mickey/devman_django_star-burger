@@ -51,6 +51,7 @@ cd devman_django_star-burger
 **Необязательные переменные:**
 - `DEBUG` — дебаг-режим. По умолчанию `False`.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts). По умолчанию '*'
+- `CSRF_TRUSTED_ORIGINS` - [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#csrf-trusted-origins). По умолчанию localhost
 - `ROLLBAR_ACCESS_TOKEN` - [Rollback токен](https://rollbar.com/)
 - `ROLLBAR_ENVIRONMENT` - Название окружения Rollbar
 - `ROLLBAR_NAME` - Имя пользователя Rollbar
