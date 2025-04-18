@@ -23,18 +23,19 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile-front
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: star-burger-frontend
     volumes:
       - bundles_volume:/app/bundles
+      - assets_volume:/app/assets
     networks:
       - star-burger
 
   django:
     build:
-      context: .
-      dockerfile: Dockerfile-back
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: star-burger-django
     restart: on-failure
     depends_on:
@@ -48,6 +49,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - bundles_volume:/app/bundles
+      - assets_volume:/app/assets
     networks:
       - star-burger
     command: >
@@ -77,6 +79,7 @@ volumes:
   static_volume:
   media_volume:
   bundles_volume:
+  assets_volume:
 
 networks:
   star-burger:

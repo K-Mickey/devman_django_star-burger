@@ -8,6 +8,6 @@ COPY package-lock.json package-lock.json
 RUN npm ci --no-audit --no-fund && \
     npm cache clean --force
 
-COPY bundles-src ./bundles-src/
+COPY . .
 
 RUN ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
