@@ -4,8 +4,6 @@ services:
     container_name: star-burger-postgres
     restart: unless-stopped
     env_file: .env
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     environment:
@@ -13,7 +11,7 @@ services:
     networks:
       - star-burger
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,7 +19,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: star-burger-frontend
     volumes:
@@ -32,10 +30,10 @@ services:
 
   django:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     container_name: star-burger-django
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,32 +48,28 @@ services:
       - assets_volume:/app/assets
     networks:
       - star-burger
+    ports:
+      - "127.0.0.1:8000:8081"
     command: >
       sh -c "python manage.py collectstatic --no-input &&
-      python manage.py migrate &&
       gunicorn star_burger.wsgi:application
       --bind $${GUNICORN_HOST}:8081
       --workers $${GUNICORN_WORKERS}"
 
-  nginx:
-    image: nginx:1.18.0
-    container_name: star-burger-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    depends_on:
-      - django
-    networks:
-      - star-burger
-
 volumes:
   postgres_volume:
   static_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/star-burger/static
   media_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/star-burger/media
   bundles_volume:
   assets_volume:
 
