@@ -19,7 +19,7 @@ services:
 
   frontend:
     build:
-      context: ../frontend
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: star-burger-frontend
     volumes:
@@ -30,7 +30,7 @@ services:
 
   django:
     build:
-      context: ../backend
+      context: ./backend
       dockerfile: Dockerfile
     container_name: star-burger-django
     restart: unless-stopped
