@@ -57,6 +57,21 @@ services:
       --bind $${GUNICORN_HOST}:8081
       --workers $${GUNICORN_WORKERS}"
 
+  nginx:
+    image: nginx:1.18.0
+    container_name: star-burger-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - django
+    networks:
+      - star-burger
+
 volumes:
   postgres_volume:
   static_volume:
